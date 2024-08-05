@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppStartingTheme" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/g</item>
+        <item name="android:smallIcon">@drawable/file</item>
+        <item name="splashScreenIconSize">10.dp</item>
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="postSplashScreenTheme">@style/Theme.MongoExpressNotes</item>
+    </style>
+</resources>

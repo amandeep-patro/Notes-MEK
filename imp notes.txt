@@ -1,0 +1,16 @@
+mongo express notes app 
+
+1. new file -> open in vs code
+2. npm init -y -> it will create a package.json
+3. npm i express -g -> download express globally, but for the project dont put -g(i dont know why)
+4. npm i nodemon -g -> so that we dont have to restart the server every time we do a change
+5. nodemon ./server.js to run
+6. android studio -> build.gradle, remove the original material3, splash.xml, data, domain, presentation, in manifest change icon and theme, enableedgetoedge, installsplashscreen,
+in presentation => navhost(nav_graph.kt, Screens), home(HomeScreen.kt), add_notes(AddNoteScreen.kt, component(CustomFilterChip.kt))
+put MainActivity in mai_ativity package. 
+7. 50:48 -> 54:06 : Summary
+8. https://www.youtube.com/watch?v=mlL6H-s0nF0&t=107s
+9. common(AppOutlinedTextField.kt, AppTollBar.kt)
+10. Event, State, ViewModel AddNoteScreen
+11. express and mongo compass setup
+12. koin setup -> 
