@@ -30,6 +30,9 @@ class ViewModelAddNoteScreen : ViewModel() , KoinComponent{
                     is Resource.Error -> {
                         _stateNote.value = notesState.value.copy(notesError = resource.message.toString(), savingNotes = false)
                     }
+                    else ->{
+
+                    }
                 }
             }
 
@@ -56,6 +59,9 @@ class ViewModelAddNoteScreen : ViewModel() , KoinComponent{
 
             is EventAddNoteScreen.SaveNote -> {
                 saveNotes(event.notes)
+            }
+            else ->{
+
             }
         }
     }

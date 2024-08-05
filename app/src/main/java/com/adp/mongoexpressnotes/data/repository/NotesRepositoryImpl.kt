@@ -1,5 +1,6 @@
 package com.adp.mongoexpressnotes.data.repository
 
+import android.util.Log
 import com.adp.mongoexpressnotes.common.util.Resource
 import com.adp.mongoexpressnotes.data.remote.NotesAPI
 import com.adp.mongoexpressnotes.domain.models.Notes
@@ -32,20 +33,34 @@ class NotesRepositoryImpl(
         }
     }
 
-    override suspend fun getNotes(): Flow<Resource<List<Notes>>> = flow{
-        val status = notesAPI.getNotes().code()
-        try{
-            val notesList = notesAPI.getNotes().body()
-            if(status == 200){
-                emit(Resource.Success(notesList!!))
-            }else{
-                emit(Resource.Error("Unable to get notes!"))
+    override suspend fun getNotes(): Flow<Resource<List<Notes>>> = flow {
+        emit(Resource.Loading())
+        try {
+            val response = notesAPI.getNotes()
+            val status = response.code()
+            val notesList = response.body()
+            if (status == 200 && notesList != null) {
+                // Log the contents of notesList
+                notesList.forEach { note ->
+                    Log.d("NotesRepository", "Fetched Note: ${note._id}, ${note.noteTitle}, ${note.noteDescription}, ${note.notePriority}")
+                }
+                emit(Resource.Success(notesList))
+            } else {
+                val errorMessage = "Unable to get notes!"
+                // Log the error message
+                Log.e("NotesRepository", errorMessage)
+                emit(Resource.Error(errorMessage))
             }
-        }
-        catch (e: IOException) {
-            emit(Resource.Error("Couldn't reach server. Check your internet connection."))
+        } catch (e: IOException) {
+            val errorMessage = "Couldn't reach server. Check your internet connection."
+            // Log the error message
+            Log.e("NotesRepository", errorMessage, e)
+            emit(Resource.Error(errorMessage))
         } catch (e: HttpException) {
-            emit(Resource.Error("An unexpected error occurred."))
+            val errorMessage = "An unexpected error occurred."
+            // Log the error message
+            Log.e("NotesRepository", errorMessage, e)
+            emit(Resource.Error(errorMessage))
         }
     }
 
@@ -60,6 +75,24 @@ class NotesRepositoryImpl(
             }
         }
         catch (e: IOException) {
+            emit(Resource.Error("Couldn't reach server. Check your internet connection."))
+        } catch (e: HttpException) {
+            emit(Resource.Error("An unexpected error occurred."))
+        }
+    }
+
+    override suspend fun updateNoteById(id: String, notes: Notes): Flow<Resource<Notes>> = flow {
+        emit(Resource.Loading())
+        try {
+            val response = notesAPI.updateNoteById(id, notes)
+            val status = response.code()
+            val updatedNote = response.body()
+            if (status == 200 && updatedNote != null) {
+                emit(Resource.Success(updatedNote))
+            } else {
+                emit(Resource.Error("Unable to update note!"))
+            }
+        } catch (e: IOException) {
             emit(Resource.Error("Couldn't reach server. Check your internet connection."))
         } catch (e: HttpException) {
             emit(Resource.Error("An unexpected error occurred."))

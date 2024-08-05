@@ -4,5 +4,7 @@
     <style name="Theme.MongoExpressNotes" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="colorBackgroundFloating">@color/d</item>
+        <item name="android:colorBackgroundFloating">@color/d</item>
     </style>
 </resources>

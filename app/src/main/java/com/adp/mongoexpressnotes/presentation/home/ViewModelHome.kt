@@ -3,6 +3,7 @@ package com.adp.mongoexpressnotes.presentation.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.adp.mongoexpressnotes.common.util.Resource
+import com.adp.mongoexpressnotes.domain.models.Notes
 import com.adp.mongoexpressnotes.domain.repository.NotesRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -37,7 +38,53 @@ class ViewModelHome : ViewModel(), KoinComponent {
         }
     }
 
-    fun deleteNoteById(id: String) {
+    private fun deleteNoteById(id: String) {
+        viewModelScope.launch {
+            notesRepository.deleteNoteById(id).collect{resource->
+                when(resource){
+                    is Resource.Loading -> {
+                        _getNotesState.value = getNotesState.value.copy(deletingNote = true)
+                    }
+                    is Resource.Success -> {
+                        _getNotesState.value = getNotesState.value.copy(noteDeleted = resource.data.toString(), deletingNote = false)
+                        getNotes()
+                    }
+                    is Resource.Error -> {
+                        _getNotesState.value = getNotesState.value.copy(deleteError = resource.message.toString(), deletingNote = false)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun updateNoteById(id: String, notes: Notes) {
+        viewModelScope.launch {
+            notesRepository.updateNoteById(id, notes).collect { resource ->
+                when(resource) {
+                    is Resource.Loading -> {
+                        _getNotesState.value = getNotesState.value.copy(updatingNote = true)
+                    }
+                    is Resource.Success -> {
+                        _getNotesState.value = getNotesState.value.copy(noteUpdated = resource.data, updatingNote = false)
+                        getNotes()
+                    }
+                    is Resource.Error -> {
+                        _getNotesState.value = getNotesState.value.copy(updateError = resource.message, updatingNote = false)
+                    }
+                }
+            }
+        }
+    }
+
+    fun onEvent(event: EventHomeScreen){
+        when(event){
+            is EventHomeScreen.DeleteNote -> {
+                deleteNoteById(event.id)
+            }
+            is EventHomeScreen.UpdateNote -> {
+                updateNoteById(event.id, event.notes)
+            }
+        }
 
     }
 }

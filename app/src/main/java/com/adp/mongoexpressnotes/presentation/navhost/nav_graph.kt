@@ -30,6 +30,7 @@ fun SetupNavHost() {
             HomeScreen(
                 navController = navController,
                 state = state,
+                event = { viewModel.onEvent(it) }
                 )
         }
         composable<AddNoteScreen> {

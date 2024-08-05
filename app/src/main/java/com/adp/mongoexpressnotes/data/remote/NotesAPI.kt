@@ -6,6 +6,7 @@ import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 
 interface NotesAPI {
@@ -18,4 +19,7 @@ interface NotesAPI {
 
     @DELETE("/notes/{id}")
     suspend fun deleteNoteById(@Path("id") id: String) : Response<Void>
+
+    @PUT("notes/{id}")
+    suspend fun updateNoteById(@Path("id") id: String, @Body notes: Notes): Response<Notes>
 }

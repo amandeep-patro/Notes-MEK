@@ -39,6 +39,25 @@ fun AddNoteScreen(
     state : StateAddNoteScreen,
     event : (EventAddNoteScreen) -> Unit
 ) {
+    LaunchedEffect(state) {
+        when{
+            state.savingNotes -> {
+                Log.d("NoteState", "Loading...")
+            }
+            state.notesSaved  == "Notes saved successfully!" -> {
+                Log.d("NoteState", "Notes saved...")
+                navController.navigate(HomeScreen) {
+                    popUpTo(HomeScreen) {
+                        inclusive = true
+                    }
+                }
+            }
+            state.notesError == "Unable to save notes!" -> {
+                Log.d("NoteState", "Error...")
+            }
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -126,18 +145,6 @@ fun AddNoteScreen(
 
                       )
                 event(EventAddNoteScreen.SaveNote(notes))
-
-                when{
-                    state.savingNotes -> {
-                        Log.d("NoteState", "Loading...")
-                    }
-                    state.notesSaved  == "Notes saved successfully!" -> {
-                        Log.d("NoteState", "Notes saved...")
-                    }
-                    state.notesError == "Unable to save notes!" -> {
-                        Log.d("NoteState", "Error...")
-                    }
-                }
             },
             modifier = Modifier
                 .align(Alignment.BottomEnd)
@@ -193,23 +200,6 @@ fun AddNoteScreen(
                 )
             }
         }
-        LaunchedEffect(state) {
-            when{
-                state.savingNotes -> {
-                    Log.d("NoteState", "Loading...")
-                }
-                state.notesSaved  == "Notes saved successfully!" -> {
-                    Log.d("NoteState", "Notes saved...")
-                    navController.navigate(HomeScreen) {
-                        popUpTo(HomeScreen) {
-                            inclusive = true
-                        }
-                    }
-                }
-                state.notesError == "Unable to save notes!" -> {
-                    Log.d("NoteState", "Error...")
-                }
-            }
-        }
+
     }
 }

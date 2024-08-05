@@ -85,4 +85,9 @@ dependencies {
 
     // Koin core features
     implementation("io.insert-koin:koin-androidx-compose:3.2.0")
+
+//    sqareup-moshi
+    implementation( "com.squareup.moshi:moshi:1.13.0")
+    implementation ("com.squareup.moshi:moshi-kotlin:1.13.0")
+    implementation ("com.squareup.retrofit2:converter-moshi:2.9.0")
 }

@@ -11,4 +11,6 @@ interface NotesRepository {
     suspend fun getNotes () : Flow<Resource<List<Notes>>>
 
     suspend fun deleteNoteById(id: String): Flow<Resource<String>>
+
+    suspend fun updateNoteById(id: String, notes: Notes): Flow<Resource<Notes>>
 }

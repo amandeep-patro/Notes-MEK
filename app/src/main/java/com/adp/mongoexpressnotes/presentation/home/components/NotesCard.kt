@@ -1,6 +1,7 @@
 package com.adp.mongoexpressnotes.presentation.home.components
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.content.MediaType.Companion.Text
@@ -31,20 +32,58 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
+import com.adp.mongoexpressnotes.presentation.home.EventHomeScreen
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun NotesCard(
     modifier: Modifier = Modifier,
-    notes: Notes
+    notes: Notes,
+    onDelete : (String) -> Unit,
+    onUpdate: (String, Notes) -> Unit
 ){
+    var showDialog by rememberSaveable { mutableStateOf(false) }
+    var showUpdateDialog by rememberSaveable { mutableStateOf(false) }
+
+    if (showDialog) {
+        CustomAlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = "Delete Note",
+            text = "Are you sure you want to delete this note?",
+            confirmButtonText = "Confirm",
+            dismissButtonText = "Cancel",
+            onConfirmClick = {
+                notes._id?.let { onDelete(it) }
+                showDialog = false
+            },
+            onDismissClick = { showDialog = false }
+        )
+    }
+
+    if (showUpdateDialog) {
+        UpdateNoteDialog(
+            initialNote = notes,
+            onDismissRequest = { showUpdateDialog = false },
+            onConfirmClick = { updatedNote ->
+                notes._id?.let { onUpdate(it, updatedNote) }
+                showUpdateDialog = false
+            }
+        )
+    }
+
     val chipColor = remember(notes.notePriority){
         when(notes.notePriority){
             "Medium" -> Color.Yellow
@@ -98,7 +137,18 @@ fun NotesCard(
             shape = RoundedCornerShape(8.dp),
             elevation = CardDefaults.cardElevation(10.dp),
             colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-            modifier = modifier.fillMaxWidth()
+            modifier = modifier
+                .fillMaxWidth()
+                .pointerInput(Unit) {
+                    detectTapGestures(
+                        onLongPress = {
+                            showDialog = true
+                        },
+                        onDoubleTap = {
+                            showUpdateDialog = true
+                        }
+                    )
+                }
         ){
             Box(modifier = Modifier
                 .fillMaxSize()

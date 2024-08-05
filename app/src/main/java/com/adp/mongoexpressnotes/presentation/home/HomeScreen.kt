@@ -1,6 +1,7 @@
 package com.adp.mongoexpressnotes.presentation.home
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -18,6 +19,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -27,16 +29,53 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.adp.mongoexpressnotes.R
 import com.adp.mongoexpressnotes.common.components.AppToolBar
-import com.adp.mongoexpressnotes.domain.models.notesList
 import com.adp.mongoexpressnotes.presentation.home.components.NotesCard
 import com.adp.mongoexpressnotes.presentation.navhost.AddNoteScreen
+import com.adp.mongoexpressnotes.presentation.navhost.HomeScreen
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreen(
     navController: NavHostController,
     state: StateHomeScreen,
+    event : (EventHomeScreen) -> Unit
 ){
+    LaunchedEffect(state) {
+        when {
+            state.gettingNotes -> {
+                Log.d("NoteState", "Fetching notes...")
+            }
+            state.fetchedNotes != null -> {
+                Log.d("NoteState", "Notes fetched: ${state.fetchedNotes.size}")
+            }
+            state.error.isNotEmpty() -> {
+                Log.d("NoteState", "Error fetching notes: ${state.error}")
+            }
+            state.deletingNote -> {
+                Log.d("NoteState", "Deleting note...")
+            }
+            state.noteDeleted.isNotEmpty() -> {
+                Log.d("NoteState", "Note deleted successfully")
+            }
+            state.deleteError.isNotEmpty() -> {
+                Log.d("NoteState", "Error deleting note: ${state.deleteError}")
+            }
+            state.updatingNote -> {
+                Log.d("NoteState", "Updating note...")
+            }
+            state.noteUpdated != null -> {
+                Log.d("NoteState", "Note updated: ${state.noteUpdated}")
+                navController.navigate(HomeScreen) {
+                    popUpTo(HomeScreen) {
+                        inclusive = true
+                    }
+                }
+            }
+            state.updateError.isNotEmpty() -> {
+                Log.d("NoteState", "Error updating note: ${state.updateError}")
+            }
+        }
+    }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -57,7 +96,10 @@ fun HomeScreen(
                     verticalItemSpacing = 10.dp
                 ) {
                     items(state.fetchedNotes!!){
-                        NotesCard(notes = it)
+                        NotesCard(
+                            notes = it,
+                            onDelete = { id -> event(EventHomeScreen.DeleteNote(id)) },
+                            onUpdate = { id, updatedNote -> event(EventHomeScreen.UpdateNote(id, updatedNote)) })
                     }
                 }
             }
@@ -96,6 +138,7 @@ fun HomeScreen(
                 )
             }
         }
+
     }
 }
 
